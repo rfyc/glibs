@@ -2,7 +2,6 @@ package flags
 
 import (
 	"flag"
-	"fmt"
 	"github.com/rfyc/glibs/conv"
 	"github.com/rfyc/glibs/php"
 	"github.com/rfyc/glibs/structs"
@@ -13,7 +12,7 @@ import (
 var (
 	ptrs       []interface{}
 	maps       = map[string]interface{}{}
-	Format     = `flag:"{fname1},{fname2},{fname3};{default};{fusage}"`
+	format     = `flag:"{fname1},{fname2},{fname3};{default};{fusage}"`
 	allowTypes = []reflect.Kind{
 		reflect.Bool,
 		reflect.String,
@@ -24,7 +23,6 @@ var (
 		reflect.Float64,
 	}
 )
-var nstr *string
 
 func flagVar(fs []string, ftype reflect.Kind) {
 
@@ -35,24 +33,37 @@ func flagVar(fs []string, ftype reflect.Kind) {
 	} else if len(fs) > 2 {
 		usage = fs[2]
 	}
-
-	for _, name := range strings.Split(fs[0], ",") {
-		switch ftype {
-		case reflect.Bool:
-			maps[name] = flag.Bool(name, conv.Bool(val), usage)
-		case reflect.String:
-			nstr = flag.String(name, val, usage)
-			maps[name] = nstr
-		case reflect.Int:
-			maps[name] = flag.Int(name, conv.Int(val), usage)
-		case reflect.Int64:
-			maps[name] = flag.Int64(name, conv.Int64(val), usage)
-		case reflect.Uint:
-			maps[name] = flag.Uint(name, conv.Uint(val), usage)
-		case reflect.Uint64:
-			maps[name] = flag.Uint64(name, conv.Uint64(val), usage)
-		case reflect.Float64:
-			maps[name] = flag.Float64(name, conv.Float64(val), usage)
+	fnames := strings.Split(fs[0], ",")
+	switch ftype {
+	case reflect.Bool:
+		var v = new(bool)
+		for _, name := range fnames {
+			flag.BoolVar(v, name, conv.Bool(val), usage)
+			maps[name] = v
+		}
+	case reflect.String:
+		var v = new(string)
+		for _, name := range fnames {
+			flag.StringVar(v, name, val, usage)
+			maps[name] = v
+		}
+	case reflect.Int, reflect.Int64:
+		var v = new(int64)
+		for _, name := range fnames {
+			flag.Int64Var(v, name, conv.Int64(val), usage)
+			maps[name] = v
+		}
+	case reflect.Uint, reflect.Uint64:
+		var v = new(uint64)
+		for _, name := range fnames {
+			flag.Uint64Var(v, name, conv.Uint64(val), usage)
+			maps[name] = v
+		}
+	case reflect.Float64:
+		var v = new(float64)
+		for _, name := range fnames {
+			flag.Float64Var(v, name, conv.Float64(val), usage)
+			maps[name] = v
 		}
 	}
 }
@@ -86,6 +97,7 @@ func StructVar(ptr interface{}) {
 }
 
 func parseVar(field reflect.Value, val interface{}) {
+
 	switch field.Kind() {
 	case reflect.Bool:
 		if v, ok := val.(*bool); ok {
@@ -95,19 +107,11 @@ func parseVar(field reflect.Value, val interface{}) {
 		if v, ok := val.(*string); ok {
 			field.SetString(*v)
 		}
-	case reflect.Int:
-		if v, ok := val.(*int); ok {
-			field.SetInt(int64(*v))
-		}
-	case reflect.Int64:
+	case reflect.Int, reflect.Int64:
 		if v, ok := val.(*int64); ok {
 			field.SetInt(*v)
 		}
-	case reflect.Uint:
-		if v, ok := val.(*uint); ok {
-			field.SetUint(uint64(*v))
-		}
-	case reflect.Uint64:
+	case reflect.Uint, reflect.Uint64:
 		if v, ok := val.(*uint64); ok {
 			field.SetUint(*v)
 		}
@@ -121,11 +125,11 @@ func parseVar(field reflect.Value, val interface{}) {
 func Parse() {
 
 	flag.Parse()
-	fmt.Println("nstr:", *nstr)
+
 	for _, ptr := range ptrs {
 		var valOf = structs.ValueOf(ptr)
 		for k := 0; k < valOf.NumField(); k++ {
-			if field := valOf.Type().Field(k); field.Tag.Get("flag") != "" && field.Anonymous {
+			if field := valOf.Type().Field(k); field.Tag.Get("flag") != "" {
 				if fs := strings.Split(field.Tag.Get("flag"), ";"); len(fs[0]) > 0 {
 					if php.InArray(field.Type.Kind(), allowTypes) {
 						for _, name := range strings.Split(fs[0], ",") {
