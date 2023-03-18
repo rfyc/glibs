@@ -1,8 +1,8 @@
 package validator
 
 import (
-	"github.com/rfyc/frame/utils/file"
-	"github.com/rfyc/frame/utils/structs"
+	"github.com/rfyc/glibs/file"
+	"github.com/rfyc/glibs/structs"
 	"reflect"
 	"strings"
 )

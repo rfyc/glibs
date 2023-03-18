@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rfyc/frame/utils/conv"
+	"github.com/rfyc/glibs/conv"
 )
 
 type CHttp struct {

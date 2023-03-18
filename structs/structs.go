@@ -6,13 +6,13 @@ import (
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/json-iterator/go/extra"
-	"github.com/rfyc/frame/utils/conv"
+	"github.com/rfyc/glibs/conv"
 	"reflect"
 	"strings"
 )
 
-//传入非struct参数 会panic
-//return map[ToLower(field)]field
+// 传入非struct参数 会panic
+// return map[ToLower(field)]field
 func Fields(argv interface{}) map[string]string {
 	refValue := ValueOf(argv)
 	if refValue.Kind() != reflect.Struct {
