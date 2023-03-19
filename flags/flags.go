@@ -12,7 +12,7 @@ import (
 var (
 	ptrs       []interface{}
 	maps       = map[string]interface{}{}
-	format     = `flag:"{fname1},{fname2},{fname3};{default};{fusage}"`
+	Format     = `flag:"{fname1},{fname2},{fname3};{default};{fusage}"`
 	allowTypes = []reflect.Kind{
 		reflect.Bool,
 		reflect.String,
@@ -26,14 +26,18 @@ var (
 
 func flagVar(fs []string, ftype reflect.Kind) {
 
-	var val, usage string
+	var (
+		val, usage string
+		fnames     = strings.Split(fs[0], ",")
+	)
 
-	if len(fs) == 2 {
+	if len(fs) > 2 {
 		val = fs[1]
-	} else if len(fs) > 2 {
 		usage = fs[2]
+	} else if len(fs) > 1 {
+		val = fs[1]
 	}
-	fnames := strings.Split(fs[0], ",")
+
 	switch ftype {
 	case reflect.Bool:
 		var v = new(bool)
