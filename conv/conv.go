@@ -215,3 +215,10 @@ func Strings(temp interface{}) []string {
 	json.Unmarshal(Bytes(temp), &ss)
 	return ss
 }
+
+func Error(err interface{}) error {
+	if e, ok := err.(error); ok {
+		return e
+	}
+	return nil
+}

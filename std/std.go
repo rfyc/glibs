@@ -214,12 +214,9 @@ func NewMaps(bytes []byte) *Maps {
 	return maps
 }
 
-func NewT(value interface{}, err ...error) T {
+func NewT(value interface{}) T {
 	t := T{
 		value: value,
-	}
-	if len(err) > 0 {
-		t.err = err[0]
 	}
 	return t
 }
