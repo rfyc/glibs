@@ -41,3 +41,7 @@ func (this *Chan) Close() {
 	close(this.ch)
 	this.closed = true
 }
+
+func (this *Chan) IsClosed() bool {
+	return this.closed
+}
