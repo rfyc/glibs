@@ -92,11 +92,11 @@ func (this T) Maps() *Maps {
 	return this.maps
 }
 
-func (this T) Index(index int) T {
+func (this T) ArrayIndex(index int) T {
 	return this.Array().Index(index)
 }
 
-func (this T) Item(key string) T {
+func (this T) MapItem(key string) T {
 	return this.Maps().Item(key)
 }
 
