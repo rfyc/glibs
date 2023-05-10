@@ -14,6 +14,10 @@ type T struct {
 	maps  *Maps
 }
 
+func (this T) Interface() interface{} {
+	return this.value
+}
+
 func (this T) String() string {
 	return conv.String(this.value)
 }
