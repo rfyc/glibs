@@ -5,23 +5,20 @@ import (
 )
 
 type Chan struct {
-	ch      chan any
+	ch      chan T
 	rwmutex *sync.RWMutex
 	closed  bool
 }
 
 func NewChan(size ...int) *Chan {
 	return &Chan{
-		ch:      make(chan any, append(size, 0)[0]),
+		ch:      make(chan T, append(size, 0)[0]),
 		rwmutex: &sync.RWMutex{},
 	}
 }
 
-func (this *Chan) Recv() T {
-	if v, ok := <-this.ch; ok {
-		return NewT(v)
-	}
-	return T{}
+func (this *Chan) Recv() chan T {
+	return this.ch
 }
 
 func (this *Chan) Send(data any) bool {
@@ -30,7 +27,7 @@ func (this *Chan) Send(data any) bool {
 	if this.closed {
 		return false
 	} else {
-		this.ch <- data
+		this.ch <- NewT(data)
 		return true
 	}
 }
