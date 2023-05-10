@@ -18,6 +18,7 @@ func NewChan(size ...int) *Chan {
 }
 
 func (this *Chan) Recv() chan T {
+	
 	return this.ch
 }
 
